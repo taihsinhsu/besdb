@@ -1,6 +1,6 @@
 import os
 import sqlalchemy
-import urlparse
+import urllib.parse
 import psycopg2
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
