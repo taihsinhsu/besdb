@@ -33,7 +33,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL(os.environ["energy_db"])
+db = SQL(os.environ["DATABASE_URL"])
 
 class SQL(object):
     def __init__(self, url):
@@ -60,8 +60,8 @@ class SQL(object):
         except Exception as e:
             raise RuntimeError(e)
 
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.environ["DATABASE_URL"])
+urllib.parse.uses_netloc.append("postgres")
+url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
 conn = psycopg2.connect(
  database=url.path[1:],
  user=url.username,
