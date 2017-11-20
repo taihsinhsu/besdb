@@ -1,5 +1,7 @@
 import os
 import sqlalchemy
+import urlparse
+import psycopg2
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
@@ -21,7 +23,6 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-
 # Custom filter
 app.jinja_env.filters["usd"] = usd
 
@@ -32,7 +33,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
+db = SQL(os.environ["energy_db"])
 
 class SQL(object):
     def __init__(self, url):
@@ -59,6 +60,15 @@ class SQL(object):
         except Exception as e:
             raise RuntimeError(e)
 
+urlparse.uses_netloc.append("postgres")
+url = urlparse.urlparse(os.environ["DATABASE_URL"])
+conn = psycopg2.connect(
+ database=url.path[1:],
+ user=url.username,
+ password=url.password,
+ host=url.hostname,
+ port=url.port
+)
 
 @app.route("/")
 @login_required
