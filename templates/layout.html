@@ -61,8 +61,6 @@
 
     <body>
 
-        <svg id="svg2">
-        </svg>
         <nav class="navbar navbar-expand-md navbar-light bg-light border">
             <a class="navbar-brand" href="/">BES Database</span></a>
             <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
@@ -88,6 +86,9 @@
                 {% endif %}
             </div>
         </nav>
+
+        <svg id="svg2">
+        </svg>
 
         {% if get_flashed_messages() %}
             <header>
@@ -123,7 +124,7 @@
           .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        d3.csv("energysim.csv", function(error, cars) {
+        d3.csv("../energysim.csv", function(error, cars) {
 
           // Extract the list of dimensions and create a scale for each.
           x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
