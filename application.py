@@ -1,7 +1,9 @@
+# Connecting PostgreSQL database to Python
 import os
-import sqlalchemy
-import urllib.parse
+from urllib import parse
 import psycopg2
+
+import sqlalchemy
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
@@ -60,15 +62,18 @@ class SQL(object):
         except Exception as e:
             raise RuntimeError(e)
 
-urllib.parse.uses_netloc.append("postgres")
-url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
+# Connecting PostgreSQL database to Python
+parse.uses_netloc.append("postgres")
+url = parse.urlparse(os.environ["DATABASE_URL"])
+
 conn = psycopg2.connect(
- database=url.path[1:],
- user=url.username,
- password=url.password,
- host=url.hostname,
- port=url.port
+    database=url.path[1:],
+    user=url.username,
+    password=url.password,
+    host=url.hostname,
+    port=url.port
 )
+
 
 @app.route("/")
 @login_required
