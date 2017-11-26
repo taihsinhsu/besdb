@@ -34,6 +34,19 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Connecting PostgreSQL database to Python
+parse.uses_netloc.append("postgres")
+url = parse.urlparse(os.environ["DATABASE_URL"])
+
+conn = psycopg2.connect(
+    database=url.path[1:],
+    user=url.username,
+    password=url.password,
+    host=url.hostname,
+    port=url.port
+)
+db = conn.curser()
+
 # Configure CS50 Library to use SQLite database
 db = SQL(os.environ["DATABASE_URL"])
 
@@ -62,17 +75,7 @@ class SQL(object):
         except Exception as e:
             raise RuntimeError(e)
 
-# Connecting PostgreSQL database to Python
-parse.uses_netloc.append("postgres")
-url = parse.urlparse(os.environ["DATABASE_URL"])
 
-conn = psycopg2.connect(
-    database=url.path[1:],
-    user=url.username,
-    password=url.password,
-    host=url.hostname,
-    port=url.port
-)
 
 
 @app.route("/")
