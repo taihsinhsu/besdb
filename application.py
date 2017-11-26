@@ -352,6 +352,9 @@ def register():
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
+        # Output CSV
+        COPY (SELECT * FROM users) TO '/templates/energysim.csv' (format CSV);
+
         # Redirect user to home page
         return redirect("/")
 
