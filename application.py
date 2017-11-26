@@ -45,7 +45,6 @@ conn = psycopg2.connect(
     host=url.hostname,
     port=url.port
 )
-db = conn.curser()
 
 # Configure CS50 Library to use SQLite database
 db = SQL(os.environ["DATABASE_URL"])
@@ -74,8 +73,6 @@ class SQL(object):
             return None
         except Exception as e:
             raise RuntimeError(e)
-
-
 
 
 @app.route("/")
@@ -354,9 +351,6 @@ def register():
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
-
-        # Output CSV
-        csv = db.execute("COPY SELECT * FROM users TO ./templates/energysim.csv (format CSV)")
 
         # Redirect user to home page
         return redirect("/")
