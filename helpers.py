@@ -1,5 +1,7 @@
-import csv
+# modules for working with URLs to access websites via python
 import urllib.request
+
+import csv
 
 from flask import redirect, render_template, request, session
 from functools import wraps

@@ -1,6 +1,10 @@
-# Connecting PostgreSQL database to Python
+# Using python operating system
 import os
+
+# Python modules working with URLs
 from urllib import parse
+
+# Connecting PostgreSQL to Python
 import psycopg2
 
 # Python SQL toolkit
@@ -8,42 +12,20 @@ import sqlalchemy
 
 from cs50 import SQL
 
+# Using web framework in Python
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
+
+# Creates a temporary directory
 from tempfile import mkdtemp
+
 from werkzeug.exceptions import default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 
-
+# local python file
 from helpers import apology, login_required, lookup, usd
 
-# define SQL class
-class SQL(object):
-    def __init__(self, url):
-        try:
-            self.engine = sqlalchemy.create_engine(url)
-        except Exception as e:
-            raise RuntimeError(e)
-    def execute(self, text, *multiparams, **params):
-        try:
-            statement = sqlalchemy.text(text).bindparams(*multiparams, **params)
-            result = self.engine.execute(str(statement.compile(compile_kwargs={"literal_binds": True})))
-            # SELECT
-            if result.returns_rows:
-                rows = result.fetchall()
-                return [dict(row) for row in rows]
-            # INSERT
-            elif result.lastrowid is not None:
-                return result.lastrowid
-            # DELETE, UPDATE
-            else:
-                return result.rowcount
-        except sqlalchemy.exc.IntegrityError:
-            return None
-        except Exception as e:
-            raise RuntimeError(e)
-
-# Configure application
+# Configure Flask application
 app = Flask(__name__)
 
 # Ensure responses aren't cached
@@ -63,7 +45,11 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Connecting PostgreSQL database to Python
+# Configure CS50 Library to use SQLite database
+# Get the users environment 
+db = SQL(os.environ["DATABASE_URL"])
+
+# Connecting PostgreSQL to Python
 parse.uses_netloc.append("postgres")
 url = parse.urlparse(os.environ["DATABASE_URL"])
 
@@ -74,9 +60,6 @@ conn = psycopg2.connect(
     host=url.hostname,
     port=url.port
 )
-
-# Configure CS50 Library to use SQLite database
-db = SQL(os.environ["DATABASE_URL"])
 
 @app.route("/")
 @login_required
@@ -449,7 +432,7 @@ def errorhandler(e):
 for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
 
-
+# Configure Flask application
 if __name__ == "__main__":
 	app.debug = True
 	port = int(os.environ.get("PORT", 5000))
