@@ -3,19 +3,48 @@ import os
 from urllib import parse
 import psycopg2
 
+# Python SQL toolkit
 import sqlalchemy
+
 from cs50 import SQL
+
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
 from helpers import apology, login_required, lookup, usd
+
+# define SQL class
+class SQL(object):
+    def __init__(self, url):
+        try:
+            self.engine = sqlalchemy.create_engine(url)
+        except Exception as e:
+            raise RuntimeError(e)
+    def execute(self, text, *multiparams, **params):
+        try:
+            statement = sqlalchemy.text(text).bindparams(*multiparams, **params)
+            result = self.engine.execute(str(statement.compile(compile_kwargs={"literal_binds": True})))
+            # SELECT
+            if result.returns_rows:
+                rows = result.fetchall()
+                return [dict(row) for row in rows]
+            # INSERT
+            elif result.lastrowid is not None:
+                return result.lastrowid
+            # DELETE, UPDATE
+            else:
+                return result.rowcount
+        except sqlalchemy.exc.IntegrityError:
+            return None
+        except Exception as e:
+            raise RuntimeError(e)
 
 # Configure application
 app = Flask(__name__)
-
 
 # Ensure responses aren't cached
 @app.after_request
@@ -48,32 +77,6 @@ conn = psycopg2.connect(
 
 # Configure CS50 Library to use SQLite database
 db = SQL(os.environ["DATABASE_URL"])
-
-class SQL(object):
-    def __init__(self, url):
-        try:
-            self.engine = sqlalchemy.create_engine(url)
-        except Exception as e:
-            raise RuntimeError(e)
-    def execute(self, text, *multiparams, **params):
-        try:
-            statement = sqlalchemy.text(text).bindparams(*multiparams, **params)
-            result = self.engine.execute(str(statement.compile(compile_kwargs={"literal_binds": True})))
-            # SELECT
-            if result.returns_rows:
-                rows = result.fetchall()
-                return [dict(row) for row in rows]
-            # INSERT
-            elif result.lastrowid is not None:
-                return result.lastrowid
-            # DELETE, UPDATE
-            else:
-                return result.rowcount
-        except sqlalchemy.exc.IntegrityError:
-            return None
-        except Exception as e:
-            raise RuntimeError(e)
-
 
 @app.route("/")
 @login_required
@@ -446,7 +449,8 @@ def errorhandler(e):
 for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
 
+
 if __name__ == "__main__":
- app.debug = True
- port = int(os.environ.get("PORT", 5000))
- app.run(host="0.0.0.0", port=port)
+	app.debug = True
+	port = int(os.environ.get("PORT", 5000))
+	app.run(host="0.0.0.0", port=port)
